@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+		<meta name="viewport" content="width=320,height=480,initial-scale=1.0,user-scalable=yes" />
+		<link rel="stylesheet" href="AudioBufPlayerDefault.css"></link>
+		<script src="jquery-2.2.2.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<title>AudioBufPlayer Test Screen</title>
+	</head>
+	<body>
+		<div id="testArea" style="margin:68px; background-color:#dedede;">
+			<input id="wav-selecter1" type="file" value="file select"></input>
+			<div class="audio-buf-player">
+				<span class="audio-buf-player-button start" onclick="playAndPause(stockAudBuf);"></span>
+				<span class="audio-buf-player-button stop" onclick="stop();"></span>
+				<span class="audio-buf-player-bar"><span class="inner"></span></span>
+				<span class="audio-buf-player-time">0:00/0:00</span>
+			</div>
+			<hr>
+		</div>
+	</body>
+	<style>
+		div.audio-buf-player {
+			width:500px;
+			height:50px;
+		}
+	</style>
+	<script>
+	    // オーディオファイルから読み出したデータをAudioBufferとして保持する変数。
+	    // ファイルの読み込みのたびに生成され、再生開始のたびに内部でsourceから参照される。
+		var stockAudBuf = null;
+		
+		// stockAudBufをもとに生成したAudioBufferSourceNodeを保持する変数。
+		//  読み込んだBufferを再生機のインターフェース(destination)へ流し込むために用いられるだけでなく、一時停止と再生の制御も行う。
+		//  再生または一時停止時には保持されるが、再生の完了またはオーディオファイルの読み込み時には破棄され、再生成される。
+		var source = null;
+		
+		// ボタン押下に合わせて、再生と一時停止の切り替えを行うための真偽値。
+		var toggle = false;
+		
+		// 中核処理を行う関数。
+		//  sourceがない場合：sourceの初期設定および画面表示項目の初期化を行う。
+		//  sourceがある場合：再生と一時停止の切り替えを行う。
+		var playAndPause = function(audBuf){
+			
+			if (audBuf == null) {
+				alert("オーディオファイルが指定されていないか、読み込み中です。後でもう一度押下してみて下さい。");
+			    return;
+		    }
+			
+			if (source == null){
+				//AudioContextの生成。
+				var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+				// AudioBufferSourceNodeを生成する
+				source = audioCtx.createBufferSource();
+				// AudioBufferSourceNodeにバッファを設定する
+				source.buffer = audBuf;
+				// AudioBufferSourceNodeを出力先に接続する
+				source.connect(audioCtx.destination);
+				// 音源の再生を始める  first:インターバル 2nd:再生開始位置
+				source.start(0,0);
+				toggle = true;
+				
+				
+				// ボタン画像を一時停止に切り替える(クラスにrunningを付与する)
+				var elm = document.getElementsByClassName("audio-buf-player-button start");
+				elm[0].classList.add("running");
+				
+				// 合計時間を計算し保存する
+				var duration = new Date();
+				duration.setTime(source.buffer.duration * 1000);
+				source.totalTime = duration.getMinutes() + ":" + String(duration.getSeconds()).padStart(2,"0");
+				
+				// 合計時間と再生時間の初期値をテキストノードへ設定する（これでブラウザ上に表示される）
+				var elm_time = document.getElementsByClassName("audio-buf-player-time");
+				elm_time[0].textContent = "0:00/" + source.totalTime;
+				
+				//初期カレントタイムも保存しておく。なぜかゼロにならないため。
+				source.initialCurTime = source.context.currentTime;
+				
+				//再生中に再生位置を表示させるイベントを登録
+				source.setIntervalID = window.setInterval(function(){
+				    //ボタンの画像を変更
+				    var elm_time = document.getElementsByClassName("audio-buf-player-time");
+				    var curTime = new Date();
+				    curTime.setTime((source.context.currentTime - source.initialCurTime) * 1000);
+				    elm_time[0].textContent =  curTime.getMinutes() + ":" + String(curTime.getSeconds()).padStart(2,"0") + "/" + source.totalTime;
+				    
+				    //進捗バーの変更
+				    var elm_bar_inner = $('div.audio-buf-player span.audio-buf-player-bar .inner');
+				    elm_bar_inner.css("width", Math.floor(curTime.getTime() / 1000 / source.buffer.duration * 100) + "%");
+				    
+				    //進捗バーの長さをコンソールに出力する。デバック用。
+				    console.log(Math.floor(curTime.getTime() / 1000 / source.buffer.duration * 100) + "%");
+				}, 500);
+				
+				//再生完了時に表示項目を戻すイベントを登録
+			    source.onended = function(){
+					if (source != null){
+						//初期化共通処理
+					    initializeSource();
+					    
+					    //進捗バーの長さは最大にしておく
+				        var elm_bar_inner = $('div.audio-buf-player span.audio-buf-player-bar .inner');
+				        elm_bar_inner.css("width", "100%");
+				    }
+				    
+				    //コンソールに再生完了のお知らせを出力する。
+				    console.log("AudioSourceNode had running completely. Play was finished.");
+				};
+				
+			}else{
+				if (toggle){
+					// 
+				    source.context.suspend();
+				    var elm = document.getElementsByClassName("audio-buf-player-button start");
+				    elm[0].classList.remove("running");
+				    toggle = false;
+			    }else{
+				    source.context.resume();
+				    var elm = document.getElementsByClassName("audio-buf-player-button start");
+				    elm[0].classList.add("running");
+				    toggle = true;
+				}
+			}
+			
+		}
+		
+		var stop = function(){
+			if (source != null && source != undefined) {
+				source.stop();
+				initializeSource();
+				
+				// 再生時間／合計時間の表示の初期化
+				var elm_time = document.getElementsByClassName("audio-buf-player-time");
+			    elm_time[0].textContent = "0:00/0:00";
+			    
+			    // 進捗バーの長さを戻す
+			    var elm_bar_inner = $('div.audio-buf-player span.audio-buf-player-bar .inner');
+			    elm_bar_inner.css("width", "0%");
+			}
+		}
+		
+		var changeWavFile =  function(e) {
+			
+			// initialize
+			if (source != null && source != undefined) {
+				stop();
+			}
+			
+			// バッファを消しておく
+		    stockAudBuf = null;
+		    // FileReaderを用いて、ファイルからデータを読み込む。
+		    var reader = new FileReader();
+            reader.readAsArrayBuffer(e.target.files[0]);
+            reader.onload = function() {
+				// FileReaderから読み込んだデータはArrayBufferだが、AudioBufferSourceNodeではAudioBufferを使うため、
+				// decodeAudioDataでAudioBufferに変換しておく。
+				var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+				audioCtx.decodeAudioData(reader.result).then(function (decodedBuffer){
+					stockAudBuf = decodedBuffer;
+				}).catch(function(error) {
+					console.log(error);
+					alert("バッファ読み込みでエラーが発生しました。ファイルが選択されているか確認して下さい。");
+				});
+            };
+            
+        }
+        
+        //sourceの初期化処理  ファイルが選択されたタイミング、再生が完了したタイミング(onended)の２箇所で呼び出される。
+        var initializeSource = function(){
+			//running属性を削除してボタンの表示を戻す
+			var elm = document.getElementsByClassName("audio-buf-player-button start");
+			elm[0].classList.remove("running");
+			
+			//進捗バーの描画イベントを停止する
+			window.clearInterval(source.setIntervalID);
+			
+			//ボタントグル用属性、ソースを初期化する
+			toggle = false;
+			source = null;
+		}
+        
+        // File要素に選択ファイルの変更イベントを登録する。
+		var wav_selecter = document.getElementById("wav-selecter1");
+		wav_selecter.addEventListener("change", changeWavFile, false);
+		
+	</script>
+</html>
