@@ -81,7 +81,7 @@
 				
 				//再生中に再生位置を表示させるイベントを登録
 				source.setIntervalID = window.setInterval(function(){
-				    //ボタンの画像を変更
+				    //表示時間を変更
 				    var elm_time = document.getElementsByClassName("audio-buf-player-time");
 				    var curTime = new Date();
 				    curTime.setTime((source.context.currentTime - source.initialCurTime) * 1000);
@@ -111,13 +111,15 @@
 				};
 				
 			}else{
+				//再生・一時停止の切り替え処理
 				if (toggle){
-					// 
+					// 再生中から一時停止にする
 				    source.context.suspend();
 				    var elm = document.getElementsByClassName("audio-buf-player-button start");
 				    elm[0].classList.remove("running");
 				    toggle = false;
 			    }else{
+					// 一時停止から再生を再開する
 				    source.context.resume();
 				    var elm = document.getElementsByClassName("audio-buf-player-button start");
 				    elm[0].classList.add("running");
@@ -168,16 +170,16 @@
             
         }
         
-        //sourceの初期化処理  ファイルが選択されたタイミング、再生が完了したタイミング(onended)の２箇所で呼び出される。
+        // sourceの初期化処理  ファイルが選択されたタイミング、再生が完了したタイミング(onended)の２箇所で呼び出される。
         var initializeSource = function(){
-			//running属性を削除してボタンの表示を戻す
+			// running属性を削除してボタンの表示を戻す
 			var elm = document.getElementsByClassName("audio-buf-player-button start");
 			elm[0].classList.remove("running");
 			
-			//進捗バーの描画イベントを停止する
+			//進 捗バーの描画イベントを停止する
 			window.clearInterval(source.setIntervalID);
 			
-			//ボタントグル用属性、ソースを初期化する
+			// ボタントグル用属性、ソースを初期化する
 			toggle = false;
 			source = null;
 		}
