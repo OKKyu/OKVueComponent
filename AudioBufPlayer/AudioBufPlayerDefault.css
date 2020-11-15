@@ -1,8 +1,9 @@
 /*
- * AudioBufPlayer.css
+ * AudioBufPlayer.css version 0.1.0
  *   This is default style for components of AudioBufPlayer.
 */
 
+/*  main body  */
 div.audio-buf-player {
   border:1px solid #8F8F8F;
   box-shadow: 1px 1px 1px #CFCFCF;
@@ -23,7 +24,7 @@ div.audio-buf-player span.audio-buf-player-button.start{
   background-image:URL('image/play_green.png');
   background-repeat:no-repeat;
   background-size:contain;
-  background-position:left;
+  background-position:right;
 }
 div.audio-buf-player span.audio-buf-player-button.start:hover{
   background-image: URL('image/play_red.png');
@@ -40,7 +41,7 @@ div.audio-buf-player span.audio-buf-player-button.stop{
   background-image:URL('image/stop_green.png');
   background-repeat:no-repeat;
   background-size:contain;
-  background-position:right;
+  background-position:left;
 }
 div.audio-buf-player span.audio-buf-player-button.stop:hover{
   background-image: URL('image/stop_red.png');
