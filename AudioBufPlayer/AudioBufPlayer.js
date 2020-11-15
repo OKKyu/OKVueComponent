@@ -1,5 +1,5 @@
 /*
- * AudioBufPlayer.js
+ * AudioBufPlayer.js version 0.1.1
  *   This code is audio player component what concreted by Vue.js.
  *   Feature of this component is below:
  *     ・It's playing music or sound from ArrayBuffer was putted in memory.
