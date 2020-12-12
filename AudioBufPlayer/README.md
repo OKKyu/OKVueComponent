@@ -24,19 +24,19 @@
 
 # Usage
 1. You shoud write AudioBufPlayer tag in your html code.
-  &lt;div id="AudioBufPlayer1"&gt;  
-  	  &lt;audio-buf-player  
-  	    v-bind:arybuf="arybuf"&gt;  
-  	  &lt;/audio-buf-player&gt;  
+    &lt;div id="AudioBufPlayer1"&gt;  
+    &lt;audio-buf-player  
+    v-bind:arybuf="arybuf"&gt;  
+    &lt;/audio-buf-player&gt;  
   &lt;/div&gt;  
 2. You shoud create instance of AudioBufPlayer in your javascript.  
   Sample code is below.  
-  var player1 = new Vue({  
-  	&npsp;el:'#AudioBufPlayer1',  
-  	&npsp;&npsp;data:{  
-  	&npsp;&npsp;&npsp;arybuf:null  
-  	&npsp;}  
-  });  
+    var player1 = new Vue({  
+    &nbsp;el:'#AudioBufPlayer1',  
+    &nbsp;&nbsp;data:{  
+    &nbsp;&nbsp;&nbsp;arybuf:null  
+    &nbsp;}  
+    });  
   You must set same value to el property and id of html tag.  
   If you already prepared arraybuffer of audio data, you can set it to data.arybuf property immediately.  
 3. If you want to set or change audio data, please set arybuf propety in your app code.  
