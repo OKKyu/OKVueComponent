@@ -11,11 +11,11 @@
 	<body>
 		<div id="testArea" style="margin:68px; background-color:#dedede;">
 			<input id="wav-selecter1" type="file" value="file select"></input>
-			<div class="audio-buf-player">
-				<span class="audio-buf-player-button start" onclick="playAndPause(stockAudBuf);"></span>
-				<span class="audio-buf-player-button stop" onclick="stop();"></span>
-				<span class="audio-buf-player-bar"><span class="inner"></span></span>
-				<span class="audio-buf-player-time">0:00/0:00</span>
+			<div name="audio-buf-player">
+				<span name="audio-buf-player-button-start" onclick="playAndPause(stockAudBuf);"></span>
+				<span name="audio-buf-player-button-stop" onclick="stop();"></span>
+				<span name="audio-buf-player-bar"><span name="inner"></span></span>
+				<span name="audio-buf-player-time">0:00/0:00</span>
 			</div>
 			<hr>
 		</div>
@@ -70,7 +70,7 @@
 				
 				
 				// ボタン画像を一時停止に切り替える(クラスにrunningを付与する)
-				var elm = document.getElementsByClassName("audio-buf-player-button start");
+				var elm = $('span[name="audio-buf-player-button-start"]');
 				elm[0].classList.add("running");
 				
 				// 合計時間を計算し保存する
@@ -79,7 +79,7 @@
 				source.totalTime = duration.getMinutes() + ":" + String(duration.getSeconds()).padStart(2,"0");
 				
 				// 合計時間と再生時間の初期値をテキストノードへ設定する（これでブラウザ上に表示される）
-				var elm_time = document.getElementsByClassName("audio-buf-player-time");
+				var elm_time = $('span[name="audio-buf-player-time"]');
 				elm_time[0].textContent = "0:00/" + source.totalTime;
 				
 				//初期カレントタイムも保存しておく。なぜかゼロにならないため。
@@ -88,13 +88,13 @@
 				//再生中に再生位置を表示させるイベントを登録
 				source.setIntervalID = window.setInterval(function(){
 				    //表示時間を変更
-				    var elm_time = document.getElementsByClassName("audio-buf-player-time");
+				    var elm_time = $('span[name="audio-buf-player-time"]');
 				    var curTime = new Date();
 				    curTime.setTime((source.context.currentTime - source.initialCurTime) * 1000);
 				    elm_time[0].textContent =  curTime.getMinutes() + ":" + String(curTime.getSeconds()).padStart(2,"0") + "/" + source.totalTime;
 				    
 				    //進捗バーの変更
-				    var elm_bar_inner = $('div.audio-buf-player span.audio-buf-player-bar .inner');
+				    var elm_bar_inner = $('div[name="audio-buf-player"] span[name="audio-buf-player-bar"] span[name="inner"]');
 				    elm_bar_inner.css("width", Math.floor(curTime.getTime() / 1000 / source.buffer.duration * 100) + "%");
 				    
 				    //進捗バーの長さをコンソールに出力する。デバック用。
@@ -108,7 +108,7 @@
 					    initializeSource();
 					    
 					    //進捗バーの長さは最大にしておく
-				        var elm_bar_inner = $('div.audio-buf-player span.audio-buf-player-bar .inner');
+				        var elm_bar_inner = $('div[name="audio-buf-player"] span[name="audio-buf-player-bar"] span[name="inner"]');
 				        elm_bar_inner.css("width", "100%");
 				    }
 				    
@@ -121,13 +121,13 @@
 				if (toggle){
 					// 再生中から一時停止にする
 				    source.context.suspend();
-				    var elm = document.getElementsByClassName("audio-buf-player-button start");
+				    var elm = $('span[name="audio-buf-player-button-start"]');
 				    elm[0].classList.remove("running");
 				    toggle = false;
 			    }else{
 					// 一時停止から再生を再開する
 				    source.context.resume();
-				    var elm = document.getElementsByClassName("audio-buf-player-button start");
+				    var elm =  $('span[name="audio-buf-player-button-start"]');
 				    elm[0].classList.add("running");
 				    toggle = true;
 				}
@@ -141,11 +141,11 @@
 				initializeSource();
 				
 				// 再生時間／合計時間の表示の初期化
-				var elm_time = document.getElementsByClassName("audio-buf-player-time");
+				var elm_time =  $('span[name="audio-buf-player-time"]');
 			    elm_time[0].textContent = "0:00/0:00";
 			    
 			    // 進捗バーの長さを戻す
-			    var elm_bar_inner = $('div.audio-buf-player span.audio-buf-player-bar .inner');
+			    var elm_bar_inner = $('div[name="audio-buf-player"] span[name="audio-buf-player-bar"] span[name="inner"]');
 			    elm_bar_inner.css("width", "0%");
 			}
 		}
@@ -179,7 +179,7 @@
         // sourceの初期化処理  ファイルが選択されたタイミング、再生が完了したタイミング(onended)の２箇所で呼び出される。
         var initializeSource = function(){
 			// running属性を削除してボタンの表示を戻す
-			var elm = document.getElementsByClassName("audio-buf-player-button start");
+			var elm = $('span[name="audio-buf-player-button-start"]');
 			elm[0].classList.remove("running");
 			
 			//進 捗バーの描画イベントを停止する
