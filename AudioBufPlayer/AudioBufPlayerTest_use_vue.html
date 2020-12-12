@@ -13,7 +13,8 @@
 			<input id="wav-selecter1" type="file" value="file select"></input>
 			<div id="AudioBufPlayer1">
 				<audio-buf-player
-				    v-bind:arybuf="arybuf">
+				    v-bind:arybuf="arybuf"
+				    v-bind:loadingmsg="loadingmsg">
 				</audio-buf-player>
 			</div>
 			<hr>
@@ -36,7 +37,8 @@
 		var player1 = new Vue({
 			el:'#AudioBufPlayer1',
 			data:{
-				arybuf:null
+				arybuf:null,
+				loadingmsg:'Now Loading...'
 			}
 		});		
 		

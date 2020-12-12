@@ -9,11 +9,14 @@
  *     ・It's single component. If you want to use it, you simply create instance by new Vue().
  */
 Vue.component('AudioBufPlayer',{
-   props:['arybuf'],
-   template:'<div name="audio-buf-player"> \
+   props:['arybuf', 'loadingmsg'],
+   template:'<div name="audio-buf-player" v-bind:class="{ loading:isLoading }"> \
 				 <span name="audio-buf-player-button-start" v-bind:class="{ running:toggleRunning }" v-on:click="playAndPause"></span> \
 				 <span name="audio-buf-player-button-stop" v-on:click="stop"></span> \
-				 <span name="audio-buf-player-bar"><span name="inner" v-bind:style="getProgressBarSize"></span></span> \
+				 <span name="audio-buf-player-bar"> \
+				     <span name="loading-msg" v-if="isLoading" v-bind:class="{ loading:isLoading }">{{ loadingmsg }}</span> \
+				     <span name="inner" v-if="isLoading == false" v-bind:style="getProgressBarSize"></span> \
+				 </span> \
 				 <span name="audio-buf-player-time">{{ drawViewTime }}</span> \
 			  </div>',
    data: function(){
@@ -27,7 +30,8 @@ Vue.component('AudioBufPlayer',{
 		   duration:0,
 		   setIntervalID:null,
 		   viewTime:'',
-		   progress:''
+		   progress:'',
+		   loading:false
 	   }
    },
    created:function(){
@@ -38,6 +42,10 @@ Vue.component('AudioBufPlayer',{
 	   toggleRunning:function(){
 		   var self = this;
 		   return self.toggle;
+	   },
+	   isLoading:function(){
+		   var self = this;
+		   return self.loading;
 	   },
 	   drawViewTime:function(){
 		   var self = this;
@@ -69,7 +77,6 @@ Vue.component('AudioBufPlayer',{
 			   return "width:" + progress  + "%;";
 		   }
 	   }
-	   
    },
    methods:{
 	   initializeSource:function(){
@@ -83,13 +90,18 @@ Vue.component('AudioBufPlayer',{
 	   playAndPause:function(){
 		    var self = this
 		    
+		    // ロード中はクリックを受け付けない
+		    if (self.loading == true) {
+				return;
+			}
+		    
 			if (self.stockAudBuf == null) {
 				alert("オーディオファイルが指定されていないか、読み込み中です。後でもう一度押下してみて下さい。");
 			    return;
 		    }
 			
 			if (self.source == null){
-				//AudioContextの生成。
+				// AudioContextの生成。
 				var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 				// AudioBufferSourceNodeを生成する
 				self.source = audioCtx.createBufferSource();
@@ -148,6 +160,11 @@ Vue.component('AudioBufPlayer',{
 		stop:function(){
 			var self = this;
 			
+		    // ロード中はクリックを受け付けない
+		    if (self.loading == true) {
+				return;
+			}
+			
 			if (self.source != null && self.source != undefined){
 			    self.source.stop();
 			    self.initializeSource();
@@ -170,14 +187,21 @@ Vue.component('AudioBufPlayer',{
 		    // バッファを消しておく
 		    self.stockAudBuf = null;
 		    
-		    //オーディオのバッファの取得
+		    // オーディオのバッファの取得
 		    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		    
+		    // ロード中表示への切り替え
+		    self.loading = true;
 		    
 		   	audioCtx.decodeAudioData(newBuf).then(function (decodedBuffer){
 				self.stockAudBuf = decodedBuffer;
+				// ロード中表示の解除
+				self.loading = false;
 			}).catch(function(error) {
 				console.log(error);
 				alert("バッファ読み込みでエラーが発生しました。ファイルが選択されているか確認して下さい。");
+				// ロード中表示の解除
+				self.loading = false;
 			});
 	   }
    }
