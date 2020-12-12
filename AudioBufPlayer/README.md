@@ -23,26 +23,26 @@
   You may use AudioBufPlayerDefault.css for styling wether customize or not it.
 
 # Usage
-1.You shoud write AudioBufPlayer tag in your html code.
-    <div id="AudioBufPlayer1">  
-    	<audio-buf-player  
-    		v-bind:arybuf="arybuf">  
-    	</audio-buf-player>  
-    </div>  
-2.You shoud create instance of AudioBufPlayer in your javascript.  
+1. You shoud write AudioBufPlayer tag in your html code.
+  &lt;div id="AudioBufPlayer1"&gt;  
+  	  &lt;audio-buf-player  
+  	    v-bind:arybuf="arybuf"&gt;  
+  	  &lt;/audio-buf-player&gt;  
+  &lt;/div&gt;  
+2. You shoud create instance of AudioBufPlayer in your javascript.  
   Sample code is below.  
-    var player1 = new Vue({  
-    	el:'#AudioBufPlayer1',  
-    	data:{  
-    		arybuf:null  
-    	}  
-    });  
+  var player1 = new Vue({  
+  	&npsp;el:'#AudioBufPlayer1',  
+  	&npsp;&npsp;data:{  
+  	&npsp;&npsp;&npsp;arybuf:null  
+  	&npsp;}  
+  });  
   You must set same value to el property and id of html tag.  
   If you already prepared arraybuffer of audio data, you can set it to data.arybuf property immediately.  
-3.If you want to set or change audio data, please set arybuf propety in your app code.  
+3. If you want to set or change audio data, please set arybuf propety in your app code.  
   Sample code is below.  
     player1.arybuf = your_prepared_audio_data;  
-4.This project include samples of implement.  
+4. This project include samples of implement.  
   Please refer to AudioBufPlayerTest_use_vue.html.  
   *You no needs to read AudioBufPlayerTest_no_vue.html.  
   This code is for compare with using vue.js and without vue.js.  
