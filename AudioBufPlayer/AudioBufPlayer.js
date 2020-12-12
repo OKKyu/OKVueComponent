@@ -10,11 +10,11 @@
  */
 Vue.component('AudioBufPlayer',{
    props:['arybuf'],
-   template:'<div class="audio-buf-player"> \
-				 <span class="audio-buf-player-button start" v-bind:class="{ running:toggleRunning }" v-on:click="playAndPause"></span> \
-				 <span class="audio-buf-player-button stop" v-on:click="stop"></span> \
-				 <span class="audio-buf-player-bar"><span class="inner" v-bind:style="getProgressBarSize"></span></span> \
-				 <span class="audio-buf-player-time">{{ drawViewTime }}</span> \
+   template:'<div name="audio-buf-player"> \
+				 <span name="audio-buf-player-button-start" v-bind:class="{ running:toggleRunning }" v-on:click="playAndPause"></span> \
+				 <span name="audio-buf-player-button-stop" v-on:click="stop"></span> \
+				 <span name="audio-buf-player-bar"><span name="inner" v-bind:style="getProgressBarSize"></span></span> \
+				 <span name="audio-buf-player-time">{{ drawViewTime }}</span> \
 			  </div>',
    data: function(){
 	   return {
